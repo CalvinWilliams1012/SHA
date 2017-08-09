@@ -22,8 +22,8 @@ public class SHA1 {
 
 	public SHA1(String message) {
 		// TODO: go through methods with string
-		for (byte b : asciiArrayToByte(charArrayToASCII(messageToCharArray(message)))) {
-			System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
+		for (byte b : addPaddingToByteArray(appendOneToByteArray(asciiArrayToByte(charArrayToASCII(messageToCharArray(message)))))) {
+			System.out.print(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
 		}
 		;
 	}
@@ -92,28 +92,36 @@ public class SHA1 {
 	}
 
 	/**
-	 * Fourth step in sha1. Simply combine all bytes and add one to it.
+	 * Fourth step in sha1. Simply combine all bytes and append one to it.(-128 = 10000000, which adds one to the end. the zeros are fine.)
 	 * @param b all the bytes.
-	 * @return b+1.
+	 * @return b append 1.
 	 */
-	public byte[] addToByteArray(byte[] b) {
-		for (int i = b.length; i > 0; i--) {
-			if (((int) b[i - 1] & 0xFF) == 255) {
-				// If the byte is max value
-				// ASCII(127 signed, 255
-				// unsigned) make this value
-				// equal zero and add to the
-				// next one. binary adding.
-				b[i - 1] = 0;
-			} else {
-				b[i - 1] += 1;
-				return b;
-			}
+	public byte[] appendOneToByteArray(byte[] b) {
+		byte[] temp = new byte[b.length+1];
+		for(int i =0;i<b.length;i++){
+			temp[i] = b[i];
 		}
-
-		return b;
+		temp[b.length] = -128;
+		return temp;
 	}
-	
-	public byte[] 
+	/**
+	 * append 0's until congruent to 448 mod 512.
+	 * @param b byte array passed
+	 * @return
+	 */
+	public byte[] addPaddingToByteArray(byte[] b) {
+		int count = b.length;
+		while((count*8)%512!=448){
+			count++;
+		}
+		byte[] temp = new byte[count];
+		for(int i = 0; i< b.length;i++){
+			temp[i] = b[i];
+		}
+		for(int i = b.length;i<count;i++){
+			temp[i] = 0;
+		}
+		return temp;
+	}
 
 }
