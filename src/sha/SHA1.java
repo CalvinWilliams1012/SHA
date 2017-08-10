@@ -19,10 +19,11 @@ public class SHA1 {
 	String h2 = "10011000101110101101110011111110";
 	String h3 = "00010000001100100101010001110110";
 	String h4 = "11000011110100101110000111110000";
+	int messageLength;
 
 	public SHA1(String message) {
 		// TODO: go through methods with string
-		for (byte b : addPaddingToByteArray(appendOneToByteArray(asciiArrayToByte(charArrayToASCII(messageToCharArray(message)))))) {
+		for (byte b : appendZeroPadding(appendOne(asciiArrayToByte(charArrayToASCII(messageToCharArray(message)))))) {
 			System.out.print(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
 		}
 		;
@@ -96,12 +97,13 @@ public class SHA1 {
 	 * @param b all the bytes.
 	 * @return b append 1.
 	 */
-	public byte[] appendOneToByteArray(byte[] b) {
-		byte[] temp = new byte[b.length+1];
-		for(int i =0;i<b.length;i++){
+	public byte[] appendOne(byte[] b) {
+		messageLength = b.length;//This is needed for the 64 bit message length append step.
+		byte[] temp = new byte[messageLength+1];
+		for(int i =0;i<messageLength;i++){
 			temp[i] = b[i];
 		}
-		temp[b.length] = -128;
+		temp[b.length] = -128;//IN BINARY =1000 0000
 		return temp;
 	}
 	/**
@@ -109,7 +111,7 @@ public class SHA1 {
 	 * @param b byte array passed
 	 * @return
 	 */
-	public byte[] addPaddingToByteArray(byte[] b) {
+	public byte[] appendZeroPadding(byte[] b) {
 		int count = b.length;
 		while((count*8)%512!=448){
 			count++;
@@ -120,6 +122,23 @@ public class SHA1 {
 		}
 		for(int i = b.length;i<count;i++){
 			temp[i] = 0;
+		}
+		return temp;
+	}
+	
+	/**
+	 * Append the original message length in binary to the end of the binary we currently have.
+	 * @param b byte array to append to.
+	 * @return appended byte array b with message length.
+	 */
+	public byte[] appendMessageLength(byte[] b){
+		byte[] temp = new byte[b.length+8];
+		for(int i = 0; i<b.length;i++){
+			temp[i] = b[i];
+		}
+		String[] s = Integer.toBinaryString(messageLength).split("(?<=\\G........)");
+		for(int j = (b.length);j<temp.length;j++){
+			temp[j] = Byte.parseByte(s[j-b.length]);
 		}
 		return temp;
 	}
