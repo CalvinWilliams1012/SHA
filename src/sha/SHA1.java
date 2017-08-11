@@ -1,5 +1,7 @@
 package sha;
 
+import java.util.Arrays;
+
 /**
  * Example of the SHA-1 Hashing algorithm.
  * 
@@ -143,4 +145,30 @@ public class SHA1 {
 		return temp;
 	}
 
+	/**
+	 * Break the message into chunks of 512 bits or 64 bytes.
+	 * @param b message.
+	 * @return array of chunk arrays.
+	 */
+	public byte[][] chunkMessage(byte[] b){
+		byte[][] temp = new byte[(b.length/64)][64];
+		
+		int chunker = 0;
+		 for(int i =0;i<temp.length;i++){
+			 temp[i] = Arrays.copyOfRange(b,chunker, chunker + 64);
+			 chunker+=64;
+		 }
+		 
+		 return temp;
+	}
+	
+	public byte[][][] wordChunk(byte[][] b){
+		byte[][][] temp = new byte[b.length][64][4];
+		
+		for(byte[] arr:b){
+			for(){
+				
+			}
+		}
+	}
 }
