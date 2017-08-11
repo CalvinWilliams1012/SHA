@@ -25,8 +25,17 @@ public class SHA1 {
 
 	public SHA1(String message) {
 		// TODO: go through methods with string
-		for (byte b : appendZeroPadding(appendOne(asciiArrayToByte(charArrayToASCII(messageToCharArray(message)))))) {
-			System.out.print(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
+		int count = 0;
+		for (byte[][] arr2 : wordChunk(chunkMessage(appendMessageLength(appendZeroPadding(appendOne(asciiArrayToByte(charArrayToASCII(messageToCharArray(message))))))))) {
+			for(byte[] arr : arr2){
+				for(byte b : arr){
+					count++;
+					System.out.print(count);
+					System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
+				}
+				count = 0;
+			}
+			
 		}
 		;
 	}
@@ -140,7 +149,7 @@ public class SHA1 {
 		}
 		String[] s = Integer.toBinaryString(messageLength).split("(?<=\\G........)");
 		for(int j = (b.length);j<temp.length;j++){
-			temp[j] = Byte.parseByte(s[j-b.length]);
+			temp[j] = Byte.parseByte(s[j-b.length]);//TODO : Array out of bounds exception.
 		}
 		return temp;
 	}
@@ -163,12 +172,15 @@ public class SHA1 {
 	}
 	
 	public byte[][][] wordChunk(byte[][] b){
-		byte[][][] temp = new byte[b.length][64][4];
+		byte[][][] temp = new byte[b.length][16][4];
 		
-		for(byte[] arr:b){
-			for(){
-				
+		int wordStart = 0;
+		for(int i = 0; i<temp.length;i++){
+			for(int j = 0;j<temp[i].length;j++){
+				temp[i][j] = Arrays.copyOfRange(b[i], wordStart, wordStart+4);
+				wordStart+=4;
 			}
 		}
+		return temp;
 	}
 }
