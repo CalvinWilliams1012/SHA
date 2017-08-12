@@ -109,9 +109,9 @@ public class SHA1 {
 	 * @return b append 1.
 	 */
 	public byte[] appendOne(byte[] b) {
-		messageLength = b.length;//This is needed for the 64 bit message length append step.
+		messageLength = b.length*8;//This is needed for the 64 bit message length append step.
 		byte[] temp = new byte[messageLength+1];
-		for(int i =0;i<messageLength;i++){
+		for(int i =0;i<(messageLength/8);i++){
 			temp[i] = b[i];
 		}
 		temp[b.length] = -128;//IN BINARY =1000 0000
