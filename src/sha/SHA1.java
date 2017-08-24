@@ -30,12 +30,12 @@ public class SHA1 {
 			for(byte[] arr : arr2){
 				for(byte b : arr){
 					count++;
-					System.out.print(count);
+					System.out.print(count + ":");
 					System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
 				}
 				count = 0;
 			}
-			
+
 		}
 		;
 	}
@@ -147,9 +147,12 @@ public class SHA1 {
 		for(int i = 0; i<b.length;i++){
 			temp[i] = b[i];
 		}
-		String[] s = Integer.toBinaryString(messageLength).split("(?<=\\G........)");
+		//Gross line of code needed, turns an integer into a 64 bit string representation with 0 padding and splits into string array of 8 chars each.
+		String[] s = String.format("%64s", Integer.toBinaryString(messageLength)).replace(' ', '0').split("(?<=\\G........)");
+		int count = 0;
 		for(int j = (b.length);j<temp.length;j++){
-			temp[j] = Byte.parseByte(s[j-b.length]);//TODO : Array out of bounds exception.
+			temp[j] = Byte.parseByte(s[count],2);
+			count++;
 		}
 		return temp;
 	}
