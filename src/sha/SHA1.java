@@ -174,6 +174,11 @@ public class SHA1 {
 		 return temp;
 	}
 	
+	/**
+	 * takes the chunk(s) and separates them into "words" of 32 bits.
+	 * @param b chunks.
+	 * @return array of arrays of words.
+	 */
 	public byte[][][] wordChunk(byte[][] b){
 		byte[][][] temp = new byte[b.length][16][4];
 		
@@ -186,4 +191,34 @@ public class SHA1 {
 		}
 		return temp;
 	}
+	
+	
+	/**
+	 * 
+	 * @param b
+	 * @return
+	 */
+	public byte[][][] extendWords(byte[][][] b){
+		byte[][][] temp = new byte[b.length][80][4];
+	
+		for(int i = 16;i<80;i++){
+			
+		}
+	}
+	
+	public byte xorBytes(byte[][] b){
+		int one = (int) b[0][0];
+		int two = (int) b[0][1];
+		int three = (int) b[0][2];
+		int four = (int) b[0][3];
+		
+		int xor = one^two;
+		xor = xor^three;
+		xor = xor^four;
+		
+		
+		return (byte)(0xff & xor);
+	}
+	
+	
 }
