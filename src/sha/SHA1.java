@@ -26,9 +26,10 @@ public class SHA1 {
 	public SHA1(String message) {
 		// TODO: go through methods with string
 		int count = 0;
-		for (byte[][] arr2 : wordChunk(chunkMessage(appendMessageLength(appendZeroPadding(appendOne(asciiArrayToByte(charArrayToASCII(messageToCharArray(message))))))))) {
-			for(byte[] arr : arr2){
-				for(byte b : arr){
+		for (byte[][] arr2 : wordChunk(chunkMessage(appendMessageLength(
+				appendZeroPadding(appendOne(asciiArrayToByte(charArrayToASCII(messageToCharArray(message))))))))) {
+			for (byte[] arr : arr2) {
+				for (byte b : arr) {
 					count++;
 					System.out.print(count + ":");
 					System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
@@ -104,54 +105,67 @@ public class SHA1 {
 	}
 
 	/**
-	 * Fourth step in sha1. Simply combine all bytes and append one to it.(-128 = 10000000, which adds one to the end. the zeros are fine.)
-	 * @param b all the bytes.
+	 * Fourth step in sha1. Simply combine all bytes and append one to it.(-128
+	 * = 10000000, which adds one to the end. the zeros are fine.)
+	 * 
+	 * @param b
+	 *            all the bytes.
 	 * @return b append 1.
 	 */
 	public byte[] appendOne(byte[] b) {
-		messageLength = b.length*8;//This is needed for the 64 bit message length append step.
-		byte[] temp = new byte[messageLength+1];
-		for(int i =0;i<(messageLength/8);i++){
+		messageLength = b.length * 8;// This is needed for the 64 bit message
+										// length append step.
+		byte[] temp = new byte[messageLength + 1];
+		for (int i = 0; i < (messageLength / 8); i++) {
 			temp[i] = b[i];
 		}
-		temp[b.length] = -128;//IN BINARY =1000 0000
+		temp[b.length] = -128;// IN BINARY =1000 0000
 		return temp;
 	}
+
 	/**
 	 * append 0's until congruent to 448 mod 512.
-	 * @param b byte array passed
+	 * 
+	 * @param b
+	 *            byte array passed
 	 * @return
 	 */
 	public byte[] appendZeroPadding(byte[] b) {
 		int count = b.length;
-		while((count*8)%512!=448){
+		while ((count * 8) % 512 != 448) {
 			count++;
 		}
 		byte[] temp = new byte[count];
-		for(int i = 0; i< b.length;i++){
+		for (int i = 0; i < b.length; i++) {
 			temp[i] = b[i];
 		}
-		for(int i = b.length;i<count;i++){
+		for (int i = b.length; i < count; i++) {
 			temp[i] = 0;
 		}
 		return temp;
 	}
-	
+
 	/**
-	 * Append the original message length in binary to the end of the binary we currently have.
-	 * @param b byte array to append to.
+	 * Append the original message length in binary to the end of the binary we
+	 * currently have.
+	 * 
+	 * @param b
+	 *            byte array to append to.
 	 * @return appended byte array b with message length.
 	 */
-	public byte[] appendMessageLength(byte[] b){
-		byte[] temp = new byte[b.length+8];
-		for(int i = 0; i<b.length;i++){
+	public byte[] appendMessageLength(byte[] b) {
+		byte[] temp = new byte[b.length + 8];
+		for (int i = 0; i < b.length; i++) {
 			temp[i] = b[i];
 		}
-		//Gross line of code needed, turns an integer into a 64 bit string representation with 0 padding and splits into string array of 8 chars each.
-		String[] s = String.format("%64s", Integer.toBinaryString(messageLength)).replace(' ', '0').split("(?<=\\G........)");
+		// Gross line of code needed, turns an integer into a 64 bit string
+		// representation with 0 padding and splits into string array of 8 chars
+		// each.
+		String[] s = String.format("%64s", Integer.toBinaryString(messageLength)).replace(' ', '0')
+				.split("(?<=\\G........)");
 		int count = 0;
-		for(int j = (b.length);j<temp.length;j++){
-			temp[j] = Byte.parseByte(s[count],2);
+		for (int j = (b.length); j < temp.length; j++) {
+			temp[j] = Byte.parseByte(s[count], 2);
 			count++;
 		}
 		return temp;
@@ -159,66 +173,76 @@ public class SHA1 {
 
 	/**
 	 * Break the message into chunks of 512 bits or 64 bytes.
-	 * @param b message.
+	 * 
+	 * @param b
+	 *            message.
 	 * @return array of chunk arrays.
 	 */
-	public byte[][] chunkMessage(byte[] b){
-		byte[][] temp = new byte[(b.length/64)][64];
-		
+	public byte[][] chunkMessage(byte[] b) {
+		byte[][] temp = new byte[(b.length / 64)][64];
+
 		int chunker = 0;
-		 for(int i =0;i<temp.length;i++){
-			 temp[i] = Arrays.copyOfRange(b,chunker, chunker + 64);
-			 chunker+=64;
-		 }
-		 
-		 return temp;
+		for (int i = 0; i < temp.length; i++) {
+			temp[i] = Arrays.copyOfRange(b, chunker, chunker + 64);
+			chunker += 64;
+		}
+
+		return temp;
 	}
-	
+
 	/**
 	 * takes the chunk(s) and separates them into "words" of 32 bits.
-	 * @param b chunks.
+	 * 
+	 * @param b
+	 *            chunks.
 	 * @return array of arrays of words.
 	 */
-	public byte[][][] wordChunk(byte[][] b){
+	public byte[][][] wordChunk(byte[][] b) {
 		byte[][][] temp = new byte[b.length][16][4];
-		
+
 		int wordStart = 0;
-		for(int i = 0; i<temp.length;i++){
-			for(int j = 0;j<temp[i].length;j++){
-				temp[i][j] = Arrays.copyOfRange(b[i], wordStart, wordStart+4);
-				wordStart+=4;
+		for (int i = 0; i < temp.length; i++) {
+			for (int j = 0; j < temp[i].length; j++) {
+				temp[i][j] = Arrays.copyOfRange(b[i], wordStart, wordStart + 4);
+				wordStart += 4;
 			}
 		}
 		return temp;
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param b
 	 * @return
 	 */
-	public byte[][][] extendWords(byte[][][] b){
-		byte[][][] temp = new byte[b.length][80][4];
-	
-		for(int i = 16;i<80;i++){
-			
+	public byte[][][] extendWords(byte[][][] b) {
+
+		for (byte[][] arr2 : b) {
+			for (byte[] arr : arr2) {
+				for (int i = 16; i < 80; i++) {
+					byte[] temp = new byte[4];
+					temp[0] = arr[i - 3];
+					temp[1] = arr[i - 8];
+					temp[2] = arr[i - 14];
+					temp[3] = arr[i - 16];
+					xorBytes(temp);
+				}
+			}
 		}
+
 	}
-	
-	public byte xorBytes(byte[][] b){
-		int one = (int) b[0][0];
-		int two = (int) b[0][1];
-		int three = (int) b[0][2];
-		int four = (int) b[0][3];
-		
-		int xor = one^two;
-		xor = xor^three;
-		xor = xor^four;
-		
-		
-		return (byte)(0xff & xor);
+
+	public byte xorBytes(byte[] b) {
+		int one = (int) b[0];
+		int two = (int) b[1];
+		int three = (int) b[2];
+		int four = (int) b[3];
+
+		int xor = one ^ two;
+		xor = xor ^ three;
+		xor = xor ^ four;
+
+		return (byte) (0xff & xor);
 	}
-	
-	
+
 }
